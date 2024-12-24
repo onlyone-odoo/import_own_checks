@@ -65,15 +65,15 @@ class ImportOwnChecksWizard(models.TransientModel):
                     if has_cheque_method:
                         journal_id = journal.id
                         _logger.info(
-                            f"Journal '{journal_name}' has cheque payment method."
+                            f"Journal '{journal_id_name}' has cheque payment method."
                         )
                     else:
                         _logger.warning(
-                            f"Journal '{journal_name}' does not have the cheque payment method."
+                            f"Journal '{journal_id_name}' does not have the cheque payment method."
                         )
                         continue  # Salta a la siguiente línea del Excel
                 else:
-                    _logger.warning(f"Journal '{journal_name}' not found.")
+                    _logger.warning(f"Journal '{journal_id_name}' not found.")
                     continue  # Salta a la siguiente línea del Excel
 
             partner_id = False

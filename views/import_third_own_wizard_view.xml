@@ -1,0 +1,27 @@
+<!-- import_own_checks/views/import_own_checks_wizard_view.xml -->
+<odoo>
+    <record id="view_import_own_checks_wizard" model="ir.ui.view">
+        <field name="name">import.own.checks.wizard.form</field>
+        <field name="model">import.own.checks.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Own Checks" create="false" edit="false">
+                <group>
+                    <field name="default_date"/>
+                    <field name="file_data" filename="file_name"/>
+                    <field name="file_name" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_import" type="object" string="Import" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_own_checks_wizard" model="ir.actions.act_window">
+        <field name="name">Import own Checks</field>
+        <field name="res_model">import.own.checks.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

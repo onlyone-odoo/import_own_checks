@@ -1,0 +1,17 @@
+<!-- import_own_checks/views/menu.xml -->
+<odoo>
+    <menuitem
+        id="menu_own_check_import_root"
+        name="Import Own Checks"
+        parent="account_ux.menu_finance_bank_and_cash"
+        sequence="90"
+    />
+    
+    <menuitem
+        id="menu_own_check_import_action"
+        name="Import Own Checks"
+        parent="menu_own_check_import_root"
+        action="action_import_own_checks_wizard"
+        sequence="10"
+    />
+</odoo>

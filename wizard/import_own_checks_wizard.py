@@ -52,29 +52,36 @@ class ImportOwnChecksWizard(models.TransientModel):
             _logger.info(f"Processing row {row_index}: {row}")
 
             journal_id = False
+            payment_method_line_id = False
+
             if journal_id_name:
+                # Buscar el diario por nombre
                 journal = self.env["account.journal"].search(
                     [("name", "=", journal_id_name)], limit=1
                 )
-                if journal:
-                    # Verificar si el diario tiene el método de pago "Cheques"
-                    has_cheque_method = any(
-                        line.payment_method_id.name == "Cheques"
-                        for line in journal.outbound_payment_method_line_ids
+                if not journal:
+                    _logger.warning(
+                        f"Journal '{journal_id_name}' not found. Skipping row."
                     )
-                    if has_cheque_method:
-                        journal_id = journal.id
-                        _logger.info(
-                            f"Journal '{journal_id_name}' has cheque payment method."
-                        )
-                    else:
-                        _logger.warning(
-                            f"Journal '{journal_id_name}' does not have the cheque payment method."
-                        )
-                        continue  # Salta a la siguiente línea del Excel
-                else:
-                    _logger.warning(f"Journal '{journal_id_name}' not found.")
-                    continue  # Salta a la siguiente línea del Excel
+                    continue  # Saltar esta fila si no se encuentra el diario
+
+                # Buscar la línea de método de pago asociada al diario con el método "Cheques"
+                cheque_method_line = journal.outbound_payment_method_line_ids.filtered(
+                    lambda line: line.payment_method_id.name == "Cheques"
+                )
+                if not cheque_method_line:
+                    _logger.warning(
+                        f"Journal '{journal.name}' does not have a payment method line for 'Cheques'. Skipping row."
+                    )
+                    continue  # Saltar esta fila si no se encuentra un método de pago válido
+
+                # Asignar valores del diario y el método de pago
+                journal_id = journal.id
+                payment_method_line_id = cheque_method_line[0].id
+
+                _logger.info(
+                    f"Journal '{journal.name}' selected with payment method 'Cheques'."
+                )
 
             partner_id = False
             if partner_name:
@@ -148,6 +155,7 @@ class ImportOwnChecksWizard(models.TransientModel):
                 "currency_id": currency_id,
                 "date": today_date,  # O usa payment_date si deseas
                 "journal_id": journal_id,
+                "payment_method_line_id": payment_method_line_id,
                 "payment_type": "outbound",
                 "ref": ref if ref else False,
                 "l10n_latam_check_number": check_number,
